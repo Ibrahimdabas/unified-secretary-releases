@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة إدارة تراخيص وتحديثات السكرتير الموحد</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border: rgba(148, 163, 184, 0.15);
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px 24px; margin-bottom: 24px; backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { font-size: 2rem; }
+    .brand-title { font-size: 1.4rem; font-weight: 800; color: #fff; }
+    .brand-sub { font-size: 0.85rem; color: var(--primary); }
+
+    /* Login Box */
+    #loginCard {
+      max-width: 420px; margin: 80px auto; background: var(--card-bg);
+      border: 1px solid var(--border); border-radius: 20px; padding: 32px;
+      text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .input-group { margin-bottom: 16px; text-align: right; }
+    .input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    input[type="text"], input[type="password"], textarea, select {
+      width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border); color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus { border-color: var(--primary); }
+
+    .btn {
+      padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.95rem;
+      cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; backdrop-filter: blur(8px);
+    }
+    .stat-val { font-size: 1.8rem; font-weight: 900; color: #fff; margin-top: 4px; }
+    .stat-lbl { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Content Cards */
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px;
+      padding: 20px; margin-bottom: 24px; backdrop-filter: blur(8px);
+    }
+    .card-title { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9rem; }
+    th { background: rgba(15, 23, 42, 0.6); padding: 12px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+    td { padding: 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.08); vertical-align: middle; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    .badge {
+      display: inline-block; padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .mono { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); }
+    .toast {
+      position: fixed; bottom: 20px; left: 20px; background: #0284c7; color: #fff;
+      padding: 12px 20px; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      z-index: 9999; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <span class="brand-icon">🏫</span>
+        <div>
+          <div class="brand-title">السكرتير الموحد — بوابة الإدارة السحابية</div>
+          <div class="brand-sub">إدارة التراخيص والتحديثات التلقائية المباشرة عبر Netlify</div>
+        </div>
+      </div>
+      <div id="headerActions" style="display:none;">
+        <button class="btn btn-sm btn-danger" onclick="logout()">خروج</button>
+      </div>
+    </header>
+
+    <!-- Login Screen -->
+    <div id="loginCard">
+      <h3 style="margin-bottom:8px;font-weight:800;">تسجيل دخول المسؤول</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:20px;">أدخل كلمة سر الإدارة المركزية لإدارة المدارس ونشر التحديثات.</p>
+      <div class="input-group">
+        <label>كلمة سر الإدارة:</label>
+        <input type="password" id="txtAdminPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">دخول لوحة التحكم</button>
+      <div id="loginError" style="color:var(--danger);font-size:0.85rem;margin-top:12px;display:none;">كلمة السر غير صحيحة.</div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" style="display:none;">
+
+      <!-- Stats Overview -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-lbl">إجمالي المدارس المسجلة</div>
+          <div class="stat-val" id="statTotalSchools">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">التراخيص السارية (نشطة)</div>
+          <div class="stat-val" style="color:var(--success)" id="statActiveLicenses">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">التراخيص المحظورة</div>
+          <div class="stat-val" style="color:var(--danger)" id="statRevokedLicenses">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">الإصدار المنشور حالياً</div>
+          <div class="stat-val" style="color:var(--primary)" id="statDeployedVersion">v1.0.5</div>
+        </div>
+      </div>
+
+      <!-- Release Management Card -->
+      <div class="card">
+        <div class="card-title">🚀 نشر إصدار تحديث جديد لجميع المدارس</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;">
+          ارفع ملف المثبت (.exe) إلى أي مستودع مجاني مثل <b>GitHub Releases</b> أو <b>Google Drive</b> (رابط مباشر) ثم ضع الرابط ورقم الإصدار هنا. سيتلقى جميع مستخدمي التطبيق إشعاراً بالتحديث ويبدأ التنزيل تلقائياً!
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:12px;">
+          <div class="input-group">
+            <label>رقم الإصدار الجديد (مثال: 1.0.6):</label>
+            <input type="text" id="relVersion" placeholder="1.0.6">
+          </div>
+          <div class="input-group">
+            <label>رابط التنزيل المباشر لملف المثبت (.exe):</label>
+            <input type="text" id="relUrl" placeholder="https://github.com/.../UnifiedSecretarySetup.exe">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>ملاحظات التحديث وما الجديد (Changelog):</label>
+          <textarea id="relChangelog" rows="2" placeholder="إصلاح جدول توزيع الحصص، إضافة مؤقت الحصة الذكي..."></textarea>
+        </div>
+        <button class="btn btn-success" onclick="publishRelease()">📢 نشر التحديث الآن لجميع المدارس</button>
+      </div>
+
+      <!-- Schools Licenses Table -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:0">📋 سجل المدارس والتراخيص المربوطة بالسحابة</div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="txtSearch" placeholder="🔍 بحث باسم المدرسة أو المعرّف..." style="width:240px;font-size:0.85rem;" oninput="renderSchoolsTable()">
+            <button class="btn btn-sm btn-primary" onclick="loadDashboard()">🔄 تحديث</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>المدرسة</th>
+                <th>معرّف الجهاز (HWID)</th>
+                <th>إصدار التطبيق</th>
+                <th>تاريخ التثبيت</th>
+                <th>آخر اتصال (Ping)</th>
+                <th>الأيام المتبقية</th>
+                <th>الحالة</th>
+                <th>إجراءات الإدارة</th>
+              </tr>
+            </thead>
+            <tbody id="schoolsTbody">
+              <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px;">لا توجد مدارس مسجلة بعد.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="toast" id="toastBox"></div>
+
+  <script>
+    let authToken = localStorage.getItem('us_admin_token') || '';
+    let allSchools = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toastBox');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    async function doLogin() {
+      const pwd = document.getElementById('txtAdminPassword').value.trim();
+      const err = document.getElementById('loginError');
+      err.style.display = 'none';
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          authToken = data.token;
+          localStorage.setItem('us_admin_token', authToken);
+          showDashboard();
+          loadDashboard();
+        } else {
+          err.style.display = 'block';
+        }
+      } catch (e) {
+        err.textContent = 'تعذر الاتصال بالخادم.';
+        err.style.display = 'block';
+      }
+    }
+
+    function logout() {
+      authToken = '';
+      localStorage.removeItem('us_admin_token');
+      document.getElementById('loginCard').style.display = 'block';
+      document.getElementById('mainDashboard').style.display = 'none';
+      document.getElementById('headerActions').style.display = 'none';
+    }
+
+    function showDashboard() {
+      document.getElementById('loginCard').style.display = 'none';
+      document.getElementById('mainDashboard').style.display = 'block';
+      document.getElementById('headerActions').style.display = 'block';
+    }
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch('/api/admin/schools', {
+          headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        if (res.status === 401) { logout(); return; }
+        const data = await res.json();
+        if (data.success) {
+          allSchools = data.schools || [];
+          document.getElementById('statTotalSchools').textContent = data.stats.total;
+          document.getElementById('statActiveLicenses').textContent = data.stats.active;
+          document.getElementById('statRevokedLicenses').textContent = data.stats.revoked;
+          if (data.update && data.update.latestVersion) {
+            document.getElementById('statDeployedVersion').textContent = 'v' + data.update.latestVersion;
+            document.getElementById('relVersion').value = data.update.latestVersion;
+            document.getElementById('relUrl').value = data.update.downloadUrl || '';
+            document.getElementById('relChangelog').value = data.update.changelog || '';
+          }
+          renderSchoolsTable();
+        }
+      } catch (e) {
+        showToast('خطأ في جلب بيانات المدارس');
+      }
+    }
+
+    function renderSchoolsTable() {
+      const q = (document.getElementById('txtSearch').value || '').toLowerCase().trim();
+      const tbody = document.getElementById('schoolsTbody');
+      tbody.innerHTML = '';
+
+      const filtered = allSchools.filter(s => {
+        return !q || (s.schoolName || '').toLowerCase().includes(q) || (s.machineId || '').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px;">لا توجد مدارس مطابقة للبحث.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(s => {
+        const isRevoked = !!s.isRevoked;
+        const isExpired = !isRevoked && (s.remainingDays <= 0);
+        let badgeHtml = '<span class="badge badge-success">🟢 سارٍ ونشط</span>';
+        if (isRevoked) badgeHtml = '<span class="badge badge-danger">⛔ محظور / ملغى</span>';
+        else if (isExpired) badgeHtml = '<span class="badge badge-warning">⚠️ منتهي</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:bold;color:#fff;">${esc(s.schoolName || 'مدرسة غير مسماة')}</td>
+          <td><span class="mono">${esc((s.machineId || '').substring(0, 16))}...</span></td>
+          <td><span class="badge" style="background:#0284c7;color:#fff">${esc(s.appVersion || '1.0.5')}</span></td>
+          <td style="font-size:0.8rem;color:var(--text-muted)">${formatDate(s.registeredAt)}</td>
+          <td style="font-size:0.8rem;color:var(--text-muted)">${formatDate(s.lastSeenAt)}</td>
+          <td style="font-weight:bold;color:${s.remainingDays > 10 ? 'var(--success)' : 'var(--danger)'}">${s.remainingDays} يوم</td>
+          <td>${badgeHtml}</td>
+          <td>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-success" onclick="modifyDays('${s.machineId}', 30, 'add_days')">+30يوم</button>
+              <button class="btn btn-sm btn-primary" onclick="modifyDays('${s.machineId}', 100, 'add_days')">+100يوم</button>
+              <button class="btn btn-sm btn-primary" onclick="promptSetDays('${s.machineId}', ${s.remainingDays})">تعديل</button>
+              ${isRevoked 
+                ? `<button class="btn btn-sm btn-success" onclick="schoolAction('${s.machineId}', 'unban')">فك الحظر</button>`
+                : `<button class="btn btn-sm btn-danger" onclick="schoolAction('${s.machineId}', 'revoke')">إلغاء الترخيص</button>`
+              }
+              <button class="btn btn-sm" style="background:#475569;color:#fff" onclick="deleteSchool('${s.machineId}')">حذف</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function schoolAction(machineId, action, extra = {}) {
+      try {
+        const res = await fetch('/api/admin/schools/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+          body: JSON.stringify({ machineId, action, ...extra })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ تم تنفيذ الإجراء بنجاح.');
+          loadDashboard();
+        } else {
+          showToast('❌ ' + (data.error || 'فشل الإجراء'));
+        }
+      } catch(e) { showToast('خطأ في الاتصال بالخادم'); }
+    }
+
+    function modifyDays(mid, days, action) {
+      schoolAction(mid, action, { days });
+    }
+
+    function promptSetDays(mid, curDays) {
+      const val = prompt('أدخل عدد الأيام الإجمالي للترخيص:', curDays);
+      if (val !== null && !isNaN(val)) {
+        schoolAction(mid, 'set_days', { days: parseInt(val, 10) });
+      }
+    }
+
+    function deleteSchool(mid) {
+      if (confirm('هل أنت متأكد من حذف سجل هذه المدرسة نهائياً؟')) {
+        schoolAction(mid, 'delete');
+      }
+    }
+
+    async function publishRelease() {
+      const ver = document.getElementById('relVersion').value.trim();
+      const url = document.getElementById('relUrl').value.trim();
+      const log = document.getElementById('relChangelog').value.trim();
+      if (!ver) { alert('أدخل رقم الإصدار أولاً'); return; }
+
+      try {
+        const res = await fetch('/api/admin/release', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+          body: JSON.stringify({ latestVersion: ver, downloadUrl: url, changelog: log })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('🚀 تم نشر التحديث بنجاح! سيصل للمدارس تلقائياً.');
+          loadDashboard();
+        } else {
+          showToast('❌ ' + (data.error || 'فشل النشر'));
+        }
+      } catch (e) { showToast('خطأ في الاتصال'); }
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '--';
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('ar-EG') + ' ' + d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+      } catch(e) { return iso; }
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    // Auto-login if token exists
+    if (authToken) {
+      showDashboard();
+      loadDashboard();
+    }
+  </script>
+</body>
+</html>

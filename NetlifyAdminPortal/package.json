@@ -1,0 +1,9 @@
+{
+  "name": "unified-secretary-admin-portal",
+  "version": "1.0.0",
+  "description": "Central License Management and Auto-Update Portal for Unified Secretary",
+  "scripts": {
+    "start": "npx netlify dev"
+  },
+  "dependencies": {}
+}
